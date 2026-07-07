@@ -3,30 +3,28 @@ pipeline {
 
     environment {
         DOCKER_API_VERSION = '1.40'
-    } // <-- Aquí faltaba cerrar esta llave
-
-    tools {
-        nodejs "Node25"
     }
 
     stages {
         stage('Instalar dependencias') {
+            agent {
+                docker { image 'node:22-alpine' }
+            }
             steps {
-                // Añadidas banderas para evitar que NPM se cuelgue en Jenkins
                 sh 'npm install --no-audit --no-fund --update-notifier=false'
             }
         }
 
         stage('Ejecutar tests') {
+            agent {
+                docker { image 'node:22-alpine' }
+            }
             steps {
                 sh 'npm test'
             }
         }
 
         stage('Construir Imagen Docker') {
-            when {
-                expression { currentBuild.result == null || currentBuild.result == 'SUCCESS' }
-            }
             steps {
                 sh 'docker build -t hola-mundo-node:latest .'
             }
@@ -44,5 +42,5 @@ pipeline {
                 '''
             }
         }
-    } // <-- Cierra stages
-} // <-- Cierra pipeline
+    }
+}
