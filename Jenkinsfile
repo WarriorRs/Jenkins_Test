@@ -8,7 +8,8 @@ pipeline {
     stages {
         stage('Instalar dependencias') {
             agent {
-                docker { image 'node:22-alpine' }
+                // Cambiado de 'docker' a 'dockerContainer' según los requisitos de tu Jenkins
+                dockerContainer { image 'node:22-alpine' }
             }
             steps {
                 sh 'npm install --no-audit --no-fund --update-notifier=false'
@@ -17,7 +18,7 @@ pipeline {
 
         stage('Ejecutar tests') {
             agent {
-                docker { image 'node:22-alpine' }
+                dockerContainer { image 'node:22-alpine' }
             }
             steps {
                 sh 'npm test'
