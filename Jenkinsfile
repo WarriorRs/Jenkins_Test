@@ -6,7 +6,7 @@ pipeline {
         DOCKER_API_VERSION = '1.40'
 
     tools {
-        nodejs "Node25" // Asume que tienes configurada una instalación llamada "Node18" en Jenkins
+        nodejs "Node25"
     }
 
     stages {
