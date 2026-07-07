@@ -1,30 +1,32 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKER_API_VERSION = '1.40'
+    tools {
+        // Usamos la versión estable que acabas de configurar en la interfaz web
+        nodejs "Node20"
     }
 
     stages {
-        // Ejecutamos la instalación y los tests directamente usando el comando docker build original
-        // Esto evita el "Launching new docker node" que se quedó trabado
-        stage('Instalar dependencias y Construir Imagen') {
+        stage('Instalar dependencias') {
             steps {
-                // Construye la imagen usando tu Dockerfile (el cual ya tiene el "npm install" adentro)
-                sh 'docker build -t hola-mundo-node:latest .'
+                // Instalación limpia evitando cuelgues de red en la universidad
+                sh 'npm install --no-audit --no-fund --update-notifier=false'
             }
         }
 
-        stage('Ejecutar Contenedor Node.js') {
-            when {
-                expression { currentBuild.result == null || currentBuild.result == 'SUCCESS' }
-            }
+        stage('Ejecutar tests') {
             steps {
-                sh '''
-                    docker stop hola-mundo-node || true
-                    docker rm hola-mundo-node || true
-                    docker run -d --name hola-mundo-node -p 3000:3000 hola-mundo-node:latest
-                '''
+                // Ejecuta los tests nativos definidos en tu package.json
+                sh 'npm test'
+            }
+        }
+
+        stage('Arrancar Aplicación') {
+            steps {
+                echo '¡Dependencias instaladas y pruebas superadas con éxito!'
+                // Si la tarea solo pide probar la app en integración continua, con esto basta.
+                // Si necesitas dejarla corriendo en segundo plano de manera nativa:
+                // sh 'npm start &'
             }
         }
     }
