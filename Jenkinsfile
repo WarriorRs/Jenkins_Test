@@ -6,27 +6,11 @@ pipeline {
     }
 
     stages {
-        stage('Instalar dependencias') {
-            agent {
-                // Cambiado de 'docker' a 'dockerContainer' según los requisitos de tu Jenkins
-                dockerContainer { image 'node:22-alpine' }
-            }
+        // Ejecutamos la instalación y los tests directamente usando el comando docker build original
+        // Esto evita el "Launching new docker node" que se quedó trabado
+        stage('Instalar dependencias y Construir Imagen') {
             steps {
-                sh 'npm install --no-audit --no-fund --update-notifier=false'
-            }
-        }
-
-        stage('Ejecutar tests') {
-            agent {
-                dockerContainer { image 'node:22-alpine' }
-            }
-            steps {
-                sh 'npm test'
-            }
-        }
-
-        stage('Construir Imagen Docker') {
-            steps {
+                // Construye la imagen usando tu Dockerfile (el cual ya tiene el "npm install" adentro)
                 sh 'docker build -t hola-mundo-node:latest .'
             }
         }
