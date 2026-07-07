@@ -1,9 +1,9 @@
 pipeline {
     agent any
 
-    
     environment {
         DOCKER_API_VERSION = '1.40'
+    } // <-- Aquí faltaba cerrar esta llave
 
     tools {
         nodejs "Node25"
@@ -12,7 +12,8 @@ pipeline {
     stages {
         stage('Instalar dependencias') {
             steps {
-                sh 'npm install'
+                // Añadidas banderas para evitar que NPM se cuelgue en Jenkins
+                sh 'npm install --no-audit --no-fund --update-notifier=false'
             }
         }
 
@@ -43,6 +44,5 @@ pipeline {
                 '''
             }
         }
-    }
-    }
-}
+    } // <-- Cierra stages
+} // <-- Cierra pipeline
